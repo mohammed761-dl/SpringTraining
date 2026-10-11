@@ -1,6 +1,7 @@
 package com.spring.springtraining.controller;
 
 import com.spring.springtraining.entities.Employee;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,7 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public ResponseEntity<Employee> createOneEmployee(@RequestBody Employee employee) {
+    public ResponseEntity<Employee> createOneEmployee(@RequestBody @Valid Employee employee) {
 
         employee.setId(UUID.randomUUID());
         employee.setDepartmentId(UUID.randomUUID());
@@ -46,7 +47,7 @@ public class EmployeeController {
 
     @PutMapping("/{employeeId}")
     public ResponseEntity<Employee> updateOneEmployee(
-            @PathVariable UUID employeeId,
+            @PathVariable @Valid UUID employeeId,
             @RequestBody Employee employee) {
 
         Employee existingEmployee = employees.stream()
