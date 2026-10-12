@@ -1,6 +1,7 @@
 package com.spring.springtraining.controller;
 
 import com.spring.springtraining.entities.Employee;
+import com.spring.springtraining.shared.CustomResponseException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,11 +26,8 @@ public class EmployeeController {
         Employee employee = employees.stream()
                 .filter(e -> e.getId().equals(employeeId))
                 .findFirst()
-                .orElse(null);
-
-        if (employee == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+                .orElseThrow(()->CustomResponseException.ResourceNotFound(
+                        "Employee with id: " + employeeId + " not found"));
 
         return new ResponseEntity<>(employee, HttpStatus.OK);
     }
@@ -47,17 +45,14 @@ public class EmployeeController {
 
     @PutMapping("/{employeeId}")
     public ResponseEntity<Employee> updateOneEmployee(
-            @PathVariable @Valid UUID employeeId,
-            @RequestBody Employee employee) {
+            @PathVariable UUID employeeId,
+            @RequestBody @Valid Employee employee) {
 
         Employee existingEmployee = employees.stream()
                 .filter(e -> e.getId().equals(employeeId))
                 .findFirst()
-                .orElse(null);
-
-        if (existingEmployee == null) {
-            return ResponseEntity.notFound().build();
-        }
+                .orElseThrow(()->CustomResponseException.ResourceNotFound(
+                        "Employee with id: " + employeeId + " not found"));
 
         existingEmployee.setFirstname(employee.getFirstname());
         existingEmployee.setLastname(employee.getLastname());

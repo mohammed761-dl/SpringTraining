@@ -16,6 +16,8 @@ import java.util.UUID;
 public class Employee {
     @NotNull(message = "Firstname cannot be null it required")
     @Size(min = 2, max = 50, message = "Firstname must be between 2 and 50 characters")
+    @NotBlank(message = "Firstname cannot be blank it required")
+    @Pattern(regexp = "[a-zA-Z]+", message = "Firstname must contain only letters")
     private String firstname;
     @NotNull(message = "Lastname cannot be blank it required")
     @Size(min = 2, max = 50, message = "Lastname must be between 2 and 50 characters")
@@ -26,7 +28,6 @@ public class Employee {
     @NotBlank(message = "Phone number cannot be blank it required")
     @Pattern(regexp = "\\d{10}", message = "Phone number must be 10 digits")
     private String phoneNumber;
-    @NotBlank(message = "Hire date cannot be blank it required")
     @PastOrPresent(message = "Hire date must be in the past or present")
     private LocalDate hireDate;
     @NotBlank(message = "Position cannot be blank it required")
