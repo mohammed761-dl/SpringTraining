@@ -2,6 +2,7 @@ package com.spring.springtraining.controller;
 
 import com.spring.springtraining.entities.Employee;
 import com.spring.springtraining.shared.CustomResponseException;
+import com.spring.springtraining.shared.GlobalResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +17,8 @@ public class EmployeeController {
     ArrayList<Employee> employees = new ArrayList<>();
 
     @GetMapping
-    public ResponseEntity<ArrayList<Employee>> getAllEmployees() {
-        return new ResponseEntity<>(employees, HttpStatus.OK);
+    public ResponseEntity<GlobalResponse<ArrayList<Employee>>> getAllEmployees() {
+        return new ResponseEntity<>(new GlobalResponse<>(employees), HttpStatus.OK);
     }
 
     @GetMapping("{employeeId}")
