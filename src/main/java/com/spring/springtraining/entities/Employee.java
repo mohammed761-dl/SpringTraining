@@ -33,6 +33,7 @@ public class Employee {
     @NotBlank(message = "Position cannot be blank it required")
     @Size(min = 2, max = 50, message = "Position must be between 2 and 50 characters")
     private String position;
+    
     private UUID id;
     private UUID departmentId;
 
