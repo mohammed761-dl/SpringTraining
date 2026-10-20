@@ -14,27 +14,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     ArrayList<Employee> employees = new ArrayList<>();
 
     @Override
-    public Employee getOneEmployees(UUID employeeId) {
-        return employees.stream()
-                .filter(e -> e.getId().equals(employeeId))
-                .findFirst()
-                .orElseThrow(() -> CustomResponseException.ResourceNotFound(
-                        "Employee with id: " + employeeId + " not found"));
-    }
-
-    @Override
-    public ArrayList<Employee> getAllEmployees() {
-        return employees;
-    }
-
-    @Override
-    public void deleteOneEmployee(UUID employeeId) {
-        Employee employee = getOneEmployees(employeeId);
-        employees.remove(employee);
-    }
-
-
-    @Override
     public Employee createOneEmployee(Employee employee) {
         employee.setId(UUID.randomUUID());
         employee.setDepartmentId(UUID.randomUUID());
@@ -57,4 +36,23 @@ public class EmployeeServiceImpl implements EmployeeService {
         return existingEmployee;
     }
 
+    @Override
+    public Employee getOneEmployees(UUID employeeId) {
+        return employees.stream()
+                .filter(e -> e.getId().equals(employeeId))
+                .findFirst()
+                .orElseThrow(() -> CustomResponseException.ResourceNotFound(
+                        "Employee with id: " + employeeId + " not found"));
+    }
+
+    @Override
+    public ArrayList<Employee> getAllEmployees() {
+        return employees;
+    }
+
+    @Override
+    public void deleteOneEmployee(UUID employeeId) {
+        Employee employee = getOneEmployees(employeeId);
+        employees.remove(employee);
+    }
 }
