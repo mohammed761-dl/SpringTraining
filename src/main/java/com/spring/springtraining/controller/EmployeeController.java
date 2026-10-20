@@ -1,5 +1,7 @@
 package com.spring.springtraining.controller;
 
+import com.spring.springtraining.DTO.EmployeeCreateDTO;
+import com.spring.springtraining.DTO.EmployeeUpdateDTO;
 import com.spring.springtraining.abstracts.EmployeeService;
 import com.spring.springtraining.entities.Employee;
 import com.spring.springtraining.shared.GlobalResponse;
@@ -22,6 +24,16 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
+    @PostMapping
+    public ResponseEntity<GlobalResponse<Employee>> createOneEmployee(
+            @RequestBody @Valid EmployeeCreateDTO employee) {
+
+        Employee createdEmployee = employeeService.createOneEmployee(employee);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new GlobalResponse<>(createdEmployee));
+    }
+
     @GetMapping
     public ResponseEntity<GlobalResponse<ArrayList<Employee>>> getAllEmployees() {
         return ResponseEntity.ok(
@@ -36,26 +48,16 @@ public class EmployeeController {
         return ResponseEntity.ok(new GlobalResponse<>(employee));
     }
 
-    @PostMapping
-    public ResponseEntity<GlobalResponse<Employee>> createOneEmployee(
-            @RequestBody @Valid Employee employee) {
-
-        Employee createdEmployee = employeeService.createOneEmployee(employee);
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new GlobalResponse<>(createdEmployee));
-    }
-
     @PutMapping("/{employeeId}")
     public ResponseEntity<GlobalResponse<Employee>> updateOneEmployee(
             @PathVariable UUID employeeId,
-            @RequestBody @Valid Employee employee) {
+            @RequestBody @Valid EmployeeUpdateDTO employee) {
 
         Employee updatedEmployee = employeeService.updateOneEmployee(employeeId, employee);
 
         return ResponseEntity.ok(new GlobalResponse<>(updatedEmployee));
     }
-
+    
     @DeleteMapping("/{employeeId}")
     public ResponseEntity<GlobalResponse<Void>> deleteOneEmployee(
             @PathVariable UUID employeeId) {
