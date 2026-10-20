@@ -1,13 +1,15 @@
+
 package com.spring.springtraining.shared;
 
 import lombok.Getter;
 
-import java.util.*;
+import java.util.List;
 
 @Getter
 public class GlobalResponse<T> {
-    public final static String SUCCESS = "success";
-    public final static String ERROR = "error";
+
+    public static final String SUCCESS = "success";
+    public static final String ERROR = "error";
 
     private final String Status;
     private final T data;
@@ -18,12 +20,30 @@ public class GlobalResponse<T> {
         this.data = null;
         this.errors = errors;
     }
+
     public GlobalResponse(T data) {
         this.Status = SUCCESS;
         this.data = data;
         this.errors = null;
     }
-    public record ErrorItems(String message) {
+
+    private GlobalResponse(
+            String status,
+            T data,
+            List<ErrorItems> errors) {
+        this.Status = status;
+        this.data = data;
+        this.errors = errors;
     }
 
+    public static GlobalResponse<Void> successMessage(String message) {
+        return new GlobalResponse<>(
+                SUCCESS,
+                null,
+                List.of(new ErrorItems(message))
+        );
+    }
+
+    public record ErrorItems(String message) {
+    }
 }

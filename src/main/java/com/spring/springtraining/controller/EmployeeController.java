@@ -1,7 +1,7 @@
 package com.spring.springtraining.controller;
 
+import com.spring.springtraining.abstracts.EmployeeService;
 import com.spring.springtraining.entities.Employee;
-import com.spring.springtraining.shared.CustomResponseException;
 import com.spring.springtraining.shared.GlobalResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -14,34 +14,36 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/employees")
 public class EmployeeController {
-    ArrayList<Employee> employees = new ArrayList<>();
+    /*@Autowired  this Anutation for dependcy inejection of fileds */
+    private final EmployeeService employeeService;
+
+    //this is dependcy injection by constrocttor
+    public EmployeeController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
+    }
 
     @GetMapping
     public ResponseEntity<GlobalResponse<ArrayList<Employee>>> getAllEmployees() {
-        return new ResponseEntity<>(new GlobalResponse<>(employees), HttpStatus.OK);
+        return ResponseEntity.ok(
+                new GlobalResponse<>(employeeService.getAllEmployees())
+        );
     }
 
-    @GetMapping("{employeeId}")
-    public ResponseEntity<GlobalResponse<Employee>> getOneEmployees(@PathVariable UUID employeeId) {
-
-        Employee employee = employees.stream()
-                .filter(e -> e.getId().equals(employeeId))
-                .findFirst()
-                .orElseThrow(()->CustomResponseException.ResourceNotFound(
-                        "Employee with id: " + employeeId + " not found"));
-
-        return new ResponseEntity<>(new GlobalResponse<>(employee), HttpStatus.OK);
+    @GetMapping("/{employeeId}")
+    public ResponseEntity<GlobalResponse<Employee>> getOneEmployees(
+            @PathVariable UUID employeeId) {
+        Employee employee = employeeService.getOneEmployees(employeeId);
+        return ResponseEntity.ok(new GlobalResponse<>(employee));
     }
 
     @PostMapping
-    public ResponseEntity<GlobalResponse<Employee>> createOneEmployee(@RequestBody @Valid Employee employee) {
+    public ResponseEntity<GlobalResponse<Employee>> createOneEmployee(
+            @RequestBody @Valid Employee employee) {
 
-        employee.setId(UUID.randomUUID());
-        employee.setDepartmentId(UUID.randomUUID());
+        Employee createdEmployee = employeeService.createOneEmployee(employee);
 
-        employees.add(employee);
-
-        return new ResponseEntity<>(new GlobalResponse<>(employee), HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new GlobalResponse<>(createdEmployee));
     }
 
     @PutMapping("/{employeeId}")
@@ -49,34 +51,19 @@ public class EmployeeController {
             @PathVariable UUID employeeId,
             @RequestBody @Valid Employee employee) {
 
-        Employee existingEmployee = employees.stream()
-                .filter(e -> e.getId().equals(employeeId))
-                .findFirst()
-                .orElseThrow(()->CustomResponseException.ResourceNotFound(
-                        "Employee with id: " + employeeId + " not found"));
+        Employee updatedEmployee = employeeService.updateOneEmployee(employeeId, employee);
 
-        existingEmployee.setFirstname(employee.getFirstname());
-        existingEmployee.setLastname(employee.getLastname());
-        existingEmployee.setEmail(employee.getEmail());
-        existingEmployee.setPhoneNumber(employee.getPhoneNumber());
-        existingEmployee.setHireDate(employee.getHireDate());
-        existingEmployee.setPosition(employee.getPosition());
-
-
-        return new ResponseEntity<>(new GlobalResponse<>(existingEmployee), HttpStatus.OK);
+        return ResponseEntity.ok(new GlobalResponse<>(updatedEmployee));
     }
 
     @DeleteMapping("/{employeeId}")
-    public ResponseEntity<Void> deleteOneEmployee(@PathVariable UUID employeeId) {
+    public ResponseEntity<GlobalResponse<Void>> deleteOneEmployee(
+            @PathVariable UUID employeeId) {
 
-        boolean removed = employees.removeIf(
-                employee -> employee.getId().equals(employeeId)
+        employeeService.deleteOneEmployee(employeeId);
+
+        return ResponseEntity.ok(
+                GlobalResponse.successMessage("Employee deleted successfully")
         );
-
-        if (!removed) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.noContent().build();
     }
 }
