@@ -22,7 +22,7 @@ public class EmployeeController {
     }
 
     @GetMapping("{employeeId}")
-    public ResponseEntity<Employee> getOneEmployees(@PathVariable UUID employeeId) {
+    public ResponseEntity<GlobalResponse<Employee>> getOneEmployees(@PathVariable UUID employeeId) {
 
         Employee employee = employees.stream()
                 .filter(e -> e.getId().equals(employeeId))
@@ -30,22 +30,22 @@ public class EmployeeController {
                 .orElseThrow(()->CustomResponseException.ResourceNotFound(
                         "Employee with id: " + employeeId + " not found"));
 
-        return new ResponseEntity<>(employee, HttpStatus.OK);
+        return new ResponseEntity<>(new GlobalResponse<>(employee), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<Employee> createOneEmployee(@RequestBody @Valid Employee employee) {
+    public ResponseEntity<GlobalResponse<Employee>> createOneEmployee(@RequestBody @Valid Employee employee) {
 
         employee.setId(UUID.randomUUID());
         employee.setDepartmentId(UUID.randomUUID());
 
         employees.add(employee);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(employee);
+        return new ResponseEntity<>(new GlobalResponse<>(employee), HttpStatus.OK);
     }
 
     @PutMapping("/{employeeId}")
-    public ResponseEntity<Employee> updateOneEmployee(
+    public ResponseEntity<GlobalResponse<Employee>> updateOneEmployee(
             @PathVariable UUID employeeId,
             @RequestBody @Valid Employee employee) {
 
@@ -62,7 +62,8 @@ public class EmployeeController {
         existingEmployee.setHireDate(employee.getHireDate());
         existingEmployee.setPosition(employee.getPosition());
 
-        return ResponseEntity.ok(existingEmployee);
+
+        return new ResponseEntity<>(new GlobalResponse<>(existingEmployee), HttpStatus.OK);
     }
 
     @DeleteMapping("/{employeeId}")
