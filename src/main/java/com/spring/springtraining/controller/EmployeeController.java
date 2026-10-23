@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -35,7 +35,7 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public ResponseEntity<GlobalResponse<ArrayList<Employee>>> getAllEmployees() {
+    public ResponseEntity<GlobalResponse<List<Employee>>> getAllEmployees() {
         return ResponseEntity.ok(
                 new GlobalResponse<>(employeeService.getAllEmployees())
         );
@@ -57,7 +57,7 @@ public class EmployeeController {
 
         return ResponseEntity.ok(new GlobalResponse<>(updatedEmployee));
     }
-    
+
     @DeleteMapping("/{employeeId}")
     public ResponseEntity<GlobalResponse<Void>> deleteOneEmployee(
             @PathVariable UUID employeeId) {

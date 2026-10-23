@@ -4,7 +4,7 @@ import com.spring.springtraining.DTO.EmployeeCreateDTO;
 import com.spring.springtraining.DTO.EmployeeUpdateDTO;
 import com.spring.springtraining.entities.Employee;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public interface EmployeeService {
@@ -13,7 +13,7 @@ public interface EmployeeService {
 
     Employee getOneEmployees(UUID id);
 
-    ArrayList<Employee> getAllEmployees();
+    List<Employee> getAllEmployees();
 
     Employee updateOneEmployee(UUID employeeId, EmployeeUpdateDTO employee);
 

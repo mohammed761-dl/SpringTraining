@@ -4,22 +4,26 @@ import com.spring.springtraining.DTO.EmployeeCreateDTO;
 import com.spring.springtraining.DTO.EmployeeUpdateDTO;
 import com.spring.springtraining.abstracts.EmployeeService;
 import com.spring.springtraining.entities.Employee;
+import com.spring.springtraining.repositories.EmployeeRepo;
 import com.spring.springtraining.shared.CustomResponseException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+
+import java.util.List;
 import java.util.UUID;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
-    ArrayList<Employee> employees = new ArrayList<>();
+    @Autowired
+    private EmployeeRepo employeeRepo;
 
     @Override
     public Employee createOneEmployee(EmployeeCreateDTO employeeCreateDTO) {
         Employee employee = new Employee();
-        employee.setId(UUID.randomUUID());
-        employee.setDepartmentId(UUID.randomUUID());
+
+
         employee.setFirstname(employeeCreateDTO.firstname());
         employee.setLastname(employeeCreateDTO.lastname());
         employee.setEmail(employeeCreateDTO.email());
@@ -27,23 +31,22 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setHireDate(employeeCreateDTO.hireDate());
         employee.setPosition(employeeCreateDTO.position());
 
-        employees.add(employee);
+        employeeRepo.save(employee);
         return employee;
     }
 
 
     @Override
     public Employee getOneEmployees(UUID employeeId) {
-        return employees.stream()
-                .filter(e -> e.getId().equals(employeeId))
-                .findFirst()
+        return employeeRepo.findById(employeeId)
                 .orElseThrow(() -> CustomResponseException.ResourceNotFound(
-                        "Employee with id: " + employeeId + " not found"));
+                        "Employee with id: " + employeeId + " not found"
+                ));
     }
 
     @Override
-    public ArrayList<Employee> getAllEmployees() {
-        return employees;
+    public List<Employee> getAllEmployees() {
+        return employeeRepo.findAll();
     }
 
     @Override
@@ -53,15 +56,20 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         existingEmployee.setFirstname(employeeUpdateDTO.firstname());
         existingEmployee.setLastname(employeeUpdateDTO.lastname());
-        existingEmployee.setPosition(employeeUpdateDTO.phoneNumber());
+        existingEmployee.setPhoneNumber(employeeUpdateDTO.phoneNumber());
         existingEmployee.setPosition(employeeUpdateDTO.position());
 
-        return existingEmployee;
+        return employeeRepo.save(existingEmployee);
     }
 
     @Override
     public void deleteOneEmployee(UUID employeeId) {
-        Employee employee = getOneEmployees(employeeId);
-        employees.remove(employee);
+        Employee employee = employeeRepo.findById(employeeId)
+                .orElseThrow(() -> CustomResponseException.ResourceNotFound(
+                        "Employee with id: " + employeeId + " not found"
+                ));
+
+        employeeRepo.delete(employee);
     }
+
 }
