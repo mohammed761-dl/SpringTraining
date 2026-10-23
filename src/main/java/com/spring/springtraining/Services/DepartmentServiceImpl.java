@@ -46,12 +46,24 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public Department updateOneDepartment(UUID departmentId, DepartmentUpdateDTO department) {
-        return null;
+    public Department updateOneDepartment(UUID departmentId, DepartmentUpdateDTO departmentUpdateDTO) {
+
+        if (departmentRepo.existsByNameIgnoreCase(departmentUpdateDTO.name())) {
+            throw CustomResponseException.Conflict(
+                    "Department already exists"
+            );
+        }
+
+        Department existingDepartment = getOneDepartment(departmentId);
+        existingDepartment.setName(departmentUpdateDTO.name());
+        return departmentRepo.save(existingDepartment);
     }
 
     @Override
     public void deleteOneDepartment(UUID id) {
+        Department department = getOneDepartment(id);
+        departmentRepo.delete(department);
 
     }
+
 }
