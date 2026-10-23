@@ -18,8 +18,18 @@ public class DepartmentServiceImpl implements DepartmentService {
     private DepartmentRepo departmentRepo;
 
     @Override
-    public Department createOneDepartment(DepartmentCreateDTO department) {
-        return null;
+    public Department createOneDepartment(DepartmentCreateDTO dto) {
+
+        if (departmentRepo.existsByNameIgnoreCase(dto.name())) {
+            throw CustomResponseException.Conflict(
+                    "Department already exists"
+            );
+        }
+
+        Department department = new Department();
+        department.setName(dto.name());
+
+        return departmentRepo.save(department);
     }
 
     @Override
@@ -32,7 +42,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public List<Department> getAllDepartments() {
-        return List.of();
+        return departmentRepo.findAll();
     }
 
     @Override

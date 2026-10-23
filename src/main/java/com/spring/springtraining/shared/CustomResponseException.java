@@ -21,4 +21,8 @@ public class CustomResponseException extends RuntimeException {
     public static CustomResponseException BadRequest(String message) {
         return new CustomResponseException(400, message);
     }
+
+    public static CustomResponseException Conflict(String message) {
+        return new CustomResponseException(409, message);
+    }
 }

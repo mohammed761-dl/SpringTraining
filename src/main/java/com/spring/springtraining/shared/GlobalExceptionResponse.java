@@ -1,5 +1,7 @@
 package com.spring.springtraining.shared;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -10,9 +12,12 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import java.util.List;
 
 
-
 @ControllerAdvice
 public class GlobalExceptionResponse {
+    private static final Logger logger =
+            LoggerFactory.getLogger(GlobalExceptionResponse.class);
+
+
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<GlobalResponse<?>> handleNoResourceFoundException(NoResourceFoundException ex) {
         var errors = List.of(new GlobalResponse.ErrorItems("Resource is not found"));
@@ -28,14 +33,22 @@ public class GlobalExceptionResponse {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<GlobalResponse<?>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         var errors = ex.getBindingResult().getFieldErrors().stream()
-                .map(error -> new GlobalResponse.ErrorItems(error.getField()+" "+ error.getDefaultMessage()))
+                .map(error -> new GlobalResponse.ErrorItems(error.getField() + " " + error.getDefaultMessage()))
                 .toList();
         return new ResponseEntity<>(new GlobalResponse<>(errors), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<GlobalResponse<?>> handleException(Exception ex) {
-        var errors = List.of(new GlobalResponse.ErrorItems("Internal server error"));
-        return new ResponseEntity<>(new GlobalResponse<>(errors), HttpStatus.INTERNAL_SERVER_ERROR);
+
+        logger.error("Unexpected error occurred", ex);
+
+        var errors = List.of(
+                new GlobalResponse.ErrorItems("Internal server error")
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new GlobalResponse<>(errors));
     }
 }
